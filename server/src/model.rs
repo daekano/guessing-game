@@ -13,6 +13,7 @@ impl GameState {
     }
 }
 
+#[derive(PartialEq)]
 pub enum GameEvent {
     ClientGuessed(u32, bool),
     GameCompleted(u32),
@@ -27,19 +28,18 @@ impl GameState {
             max_number: max_number,
         }
     }
-    pub fn reset(&mut self) {
-        self.guesses = 0;
-        self.number = pick_number(self.min_number, self.max_number);
+    pub fn reset(state: &mut GameState) {
+        state.guesses = 0;
+        state.number = pick_number(state.min_number, state.max_number);
     }
-    pub fn run(&mut self) -> Vec<GameEvent> {
+    pub fn run(state: &mut GameState, guess: u32) -> Vec<GameEvent> {
         let mut game_events: Vec<GameEvent> = Vec::new();
-        let guess = pick_number(self.min_number, self.max_number);
-        let guessed = guess_number(&self, guess);
-        self.guesses += 1;
-        match guessed {
-            true => game_events.push(GameEvent::GameCompleted(self.guesses)),
-            _ => game_events.push(GameEvent::ClientGuessed(guess, guessed)),
+        let guessed = guess_number(state, guess);
+        state.guesses += 1;
+        if guessed {
+            game_events.push(GameEvent::GameCompleted(state.guesses));
         }
+        game_events.push(GameEvent::ClientGuessed(guess, guessed));
 
         return game_events;
     }
@@ -49,7 +49,39 @@ fn guess_number(game: &GameState, guess: u32) -> bool {
     game.number == guess
 }
 
-fn pick_number(min: u32, max: u32) -> u32 {
+pub fn pick_number(min: u32, max: u32) -> u32 {
     let mut rng = rand::thread_rng();
     rng.gen_range(min, max)
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test_gamestate_run() {
+        let mut state = super::GameState {
+            guesses: 0,
+            number: 5,
+            min_number: 1,
+            max_number: 10,
+        };
+
+        let events = super::GameState::run(&mut state, 5);
+        let expected_events: Vec<super::GameEvent> = vec![
+            super::GameEvent::GameCompleted(1),
+            super::GameEvent::ClientGuessed(5, true),
+        ];
+        assert!(events == expected_events);
+    }
+
+    #[test]
+    fn test_guess_number() {
+        let state = super::GameState {
+            guesses: 0,
+            number: 5,
+            min_number: 1,
+            max_number: 10,
+        };
+        let guessed = super::guess_number(&state, 5);
+        assert_eq!(guessed, true);
+    }
 }

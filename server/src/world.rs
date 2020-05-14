@@ -20,14 +20,15 @@ impl World {
     pub fn start(&mut self) {
         println!("game started! number to guess: {}", self.game.number());
         loop {
-            let events = self.game.run();
+            let events =
+                model::GameState::run(&mut self.game, model::pick_number(MIN_NUMBER, MAX_NUMBER));
             for event in events {
                 match event {
                     model::GameEvent::ClientGuessed(guess, guessed) => {
                         println!("guess: {}, guessed: {}", guess, guessed)
                     }
                     model::GameEvent::GameCompleted(guesses) => {
-                        self.game.reset();
+                        model::GameState::reset(&mut self.game);
                         println!("the computer guessed the number after {} guesses", guesses);
                         println!("the new number to guess is: {}", self.game.number());
                     }
