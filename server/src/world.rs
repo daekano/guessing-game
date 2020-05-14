@@ -20,15 +20,20 @@ impl World {
     pub fn start(&mut self) {
         println!("game started! number to guess: {}", self.game.number());
         loop {
-            thread::sleep(self.time_wait);
-            let game_result = self.game.run();
-            for message in game_result.messages() {
-                println!("{}", message);
+            let events = self.game.run();
+            for event in events {
+                match event {
+                    model::GameEvent::ClientGuess(guess, guessed) => {
+                        println!("guess: {}, guessed: {}", guess, guessed)
+                    }
+                    model::GameEvent::GameComplete(guesses) => {
+                        self.game.reset();
+                        println!("the computer guessed the number after {} guesses", guesses);
+                        println!("the new number to guess is: {}", self.game.number());
+                    }
+                }
             }
-            match game_result.event().as_str() {
-                model::EVENT_GAME_COMPLETE => self.game.reset(),
-                _ => continue,
-            };
+            thread::sleep(self.time_wait);
         }
     }
 }

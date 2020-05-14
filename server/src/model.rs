@@ -1,8 +1,5 @@
 use rand::Rng;
 
-pub const EVENT_GAME_COMPLETE: &str = "game_complete";
-pub const EVENT_GAME_CONTINUING: &str = "game_continuing";
-
 pub struct GameState {
     number: u32,
     guesses: u32,
@@ -16,24 +13,9 @@ impl GameState {
     }
 }
 
-pub struct GameResult {
-    messages: Vec<String>,
-    event: String,
-}
-
-impl GameResult {
-    pub fn new() -> GameResult {
-        GameResult {
-            messages: Vec::new(),
-            event: "".to_owned(),
-        }
-    }
-    pub fn messages(&self) -> &Vec<String> {
-        return &self.messages;
-    }
-    pub fn event(&self) -> &String {
-        return &self.event;
-    }
+pub enum GameEvent {
+    ClientGuess(u32, bool),
+    GameComplete(u32),
 }
 
 impl GameState {
@@ -48,27 +30,18 @@ impl GameState {
     pub fn reset(&mut self) {
         self.guesses = 0;
         self.number = pick_number(self.min_number, self.max_number);
-        println!("new number: {}", self.number);
     }
-    pub fn run(&mut self) -> GameResult {
-        let mut game_result = GameResult::new();
+    pub fn run(&mut self) -> Vec<GameEvent> {
+        let mut game_events: Vec<GameEvent> = Vec::new();
         let guess = pick_number(self.min_number, self.max_number);
         let guessed = guess_number(&self, guess);
         self.guesses += 1;
-        game_result
-            .messages
-            .push(format!("guess: {}, guessed: {}", guess, guessed));
+        game_events.push(GameEvent::ClientGuess(guess, guessed));
         if guessed {
-            game_result.messages.push(format!(
-                "the computer guessed the number after {} guesses",
-                self.guesses
-            ));
-            game_result.event = EVENT_GAME_COMPLETE.to_owned();
-        } else {
-            game_result.event = EVENT_GAME_CONTINUING.to_owned();
+            game_events.push(GameEvent::GameComplete(self.guesses));
         }
 
-        return game_result;
+        return game_events;
     }
 }
 
