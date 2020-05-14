@@ -36,9 +36,9 @@ impl GameState {
         let guess = pick_number(self.min_number, self.max_number);
         let guessed = guess_number(&self, guess);
         self.guesses += 1;
-        game_events.push(GameEvent::ClientGuessed(guess, guessed));
-        if guessed {
-            game_events.push(GameEvent::GameCompleted(self.guesses));
+        match guessed {
+            true => game_events.push(GameEvent::GameCompleted(self.guesses)),
+            _ => game_events.push(GameEvent::ClientGuessed(guess, guessed)),
         }
 
         return game_events;
