@@ -23,10 +23,10 @@ impl World {
             let events = self.game.run();
             for event in events {
                 match event {
-                    model::GameEvent::ClientGuess(guess, guessed) => {
+                    model::GameEvent::ClientGuessed(guess, guessed) => {
                         println!("guess: {}, guessed: {}", guess, guessed)
                     }
-                    model::GameEvent::GameComplete(guesses) => {
+                    model::GameEvent::GameCompleted(guesses) => {
                         self.game.reset();
                         println!("the computer guessed the number after {} guesses", guesses);
                         println!("the new number to guess is: {}", self.game.number());

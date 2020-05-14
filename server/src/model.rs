@@ -14,8 +14,8 @@ impl GameState {
 }
 
 pub enum GameEvent {
-    ClientGuess(u32, bool),
-    GameComplete(u32),
+    ClientGuessed(u32, bool),
+    GameCompleted(u32),
 }
 
 impl GameState {
@@ -36,9 +36,9 @@ impl GameState {
         let guess = pick_number(self.min_number, self.max_number);
         let guessed = guess_number(&self, guess);
         self.guesses += 1;
-        game_events.push(GameEvent::ClientGuess(guess, guessed));
+        game_events.push(GameEvent::ClientGuessed(guess, guessed));
         if guessed {
-            game_events.push(GameEvent::GameComplete(self.guesses));
+            game_events.push(GameEvent::GameCompleted(self.guesses));
         }
 
         return game_events;
