@@ -56,6 +56,21 @@ pub fn pick_number(min: u32, max: u32) -> u32 {
 
 #[cfg(test)]
 mod tests {
+
+    #[test]
+    fn test_gamestate_reset() {
+        let mut state = super::GameState {
+            guesses: 10,
+            number: 50,
+            min_number: 1,
+            max_number: 10,
+        };
+
+        super::GameState::reset(&mut state);
+
+        assert_eq!(state.guesses, 0);
+        assert!(state.number <= 10);
+    }
     #[test]
     fn test_gamestate_run() {
         let mut state = super::GameState {
