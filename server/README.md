@@ -24,6 +24,6 @@
 
 ### Domain
 
-- Accept domain event inputs
-- Simulate game with domain I/O
+- Accept domain command inputs
+- Simulate game run
 - Output domain events
