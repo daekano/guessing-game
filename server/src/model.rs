@@ -72,7 +72,7 @@ mod tests {
         assert!(state.number <= 10);
     }
     #[test]
-    fn test_gamestate_run() {
+    fn test_gamestate_run_completed() {
         let mut state = super::GameState {
             guesses: 0,
             number: 5,
@@ -85,6 +85,21 @@ mod tests {
             super::GameEvent::GameCompleted(1),
             super::GameEvent::ClientGuessed(5, true),
         ];
+        assert!(events == expected_events);
+    }
+
+    #[test]
+    fn test_gamestate_run() {
+        let mut state = super::GameState {
+            guesses: 0,
+            number: 1,
+            min_number: 1,
+            max_number: 10,
+        };
+
+        let events = super::GameState::run(&mut state, 5);
+        let expected_events: Vec<super::GameEvent> =
+            vec![super::GameEvent::ClientGuessed(5, false)];
         assert!(events == expected_events);
     }
 
