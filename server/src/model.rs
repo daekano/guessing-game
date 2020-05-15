@@ -34,7 +34,7 @@ impl GameState {
     }
     pub fn run(state: &mut GameState, guess: u32) -> Vec<GameEvent> {
         let mut game_events: Vec<GameEvent> = Vec::new();
-        let guessed = guess_number(state, guess);
+        let guessed = state.number == guess;
         state.guesses += 1;
         if guessed {
             game_events.push(GameEvent::GameCompleted(state.guesses));
@@ -43,10 +43,6 @@ impl GameState {
 
         return game_events;
     }
-}
-
-fn guess_number(game: &GameState, guess: u32) -> bool {
-    game.number == guess
 }
 
 pub fn pick_number(min: u32, max: u32) -> u32 {
@@ -101,17 +97,5 @@ mod tests {
         let expected_events: Vec<super::GameEvent> =
             vec![super::GameEvent::ClientGuessed(5, false)];
         assert!(events == expected_events);
-    }
-
-    #[test]
-    fn test_guess_number() {
-        let state = super::GameState {
-            guesses: 0,
-            number: 5,
-            min_number: 1,
-            max_number: 10,
-        };
-        let guessed = super::guess_number(&state, 5);
-        assert_eq!(guessed, true);
     }
 }
